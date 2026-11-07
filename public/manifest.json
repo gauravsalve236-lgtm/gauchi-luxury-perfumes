@@ -1,0 +1,16 @@
+{
+  "name": "GAUCHI — Luxury Perfumes",
+  "short_name": "GAUCHI",
+  "description": "Haute Parfumerie at Accessible Luxury",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF8F5",
+  "theme_color": "#0F0F0F",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
