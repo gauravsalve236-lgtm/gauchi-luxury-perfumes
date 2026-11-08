@@ -8,6 +8,7 @@ export default function InstallAppBanner() {
   const [isIos, setIsIos] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showIosGuide, setShowIosGuide] = useState(false);
 
   useEffect(() => {
@@ -21,21 +22,28 @@ export default function InstallAppBanner() {
       return;
     }
 
-    // Check if user previously dismissed banner in this session
-    const dismissed = sessionStorage.getItem("gauchi_app_banner_dismissed");
-    if (dismissed) return;
+    // Check query params (?app=1, ?install=1, ?download=1) or first mobile visit
+    const urlParams = new URLSearchParams(window.location.search);
+    const forcePrompt = urlParams.has("app") || urlParams.has("install") || urlParams.has("download");
+    const hasSeenModal = localStorage.getItem("gauchi_app_welcome_seen");
 
-    // Detect iOS devices
+    // Detect mobile devices
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
+    const isMobile = isIosDevice || /android|mobile/.test(userAgent);
     setIsIos(isIosDevice);
 
-    if (isIosDevice) {
-      // On iOS Safari, show the install pill
+    if (forcePrompt || (!hasSeenModal && isMobile)) {
+      setShowWelcomeModal(true);
+    }
+
+    // Check if user previously dismissed banner in this session
+    const dismissed = sessionStorage.getItem("gauchi_app_banner_dismissed");
+    if (!dismissed) {
       setShowBanner(true);
     }
 
-    // Android / Desktop Chrome PWA beforeinstallprompt event
+    // Android / Chrome PWA beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -50,6 +58,9 @@ export default function InstallAppBanner() {
   }, []);
 
   const handleInstallClick = async () => {
+    setShowWelcomeModal(false);
+    localStorage.setItem("gauchi_app_welcome_seen", "true");
+
     if (isIos) {
       setShowIosGuide(true);
       return;
@@ -63,6 +74,11 @@ export default function InstallAppBanner() {
       setShowBanner(false);
     }
     setDeferredPrompt(null);
+  };
+
+  const handleCloseWelcome = () => {
+    setShowWelcomeModal(false);
+    localStorage.setItem("gauchi_app_welcome_seen", "true");
   };
 
   const handleDismiss = () => {
@@ -107,6 +123,62 @@ export default function InstallAppBanner() {
           </div>
         </div>
       </div>
+
+      {/* First-Visit / Shared Link Mobile App Welcome Gate */}
+      {showWelcomeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-[#FAF8F5] border border-[#C5A059] rounded-lg max-w-sm w-full p-6 text-center space-y-5 shadow-2xl relative">
+            <button
+              onClick={handleCloseWelcome}
+              className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-black/5 text-[#8C827A] hover:text-[#0F0F0F]"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Golden Emblem */}
+            <div className="flex flex-col items-center">
+              <img
+                src="/images/gauchi-gold-logo.png"
+                alt="Gauchi Emblem"
+                className="w-14 h-14 object-contain mb-2 drop-shadow-sm"
+              />
+              <span className="font-serif-luxury text-2xl tracking-widest-luxury text-[#0F0F0F]">
+                GAUCHI
+              </span>
+              <span className="text-[9px] uppercase tracking-[0.3em] text-[#C5A059] font-medium">
+                HAUTE PARFUMERIE
+              </span>
+            </div>
+
+            <div className="space-y-1.5">
+              <h3 className="font-serif-luxury text-base text-[#0F0F0F]">
+                Experience GAUCHI in App Format
+              </h3>
+              <p className="text-xs text-[#5A5A5A] leading-relaxed">
+                Add the official Gauchi app to your phone for instant order tracking, private flacon drops, and seamless 1-tap checkout.
+              </p>
+            </div>
+
+            <div className="space-y-2.5 pt-2">
+              <button
+                onClick={handleInstallClick}
+                className="w-full py-3 bg-[#0F0F0F] hover:bg-[#C5A059] text-white text-xs uppercase tracking-widest-luxury font-medium rounded-sm flex items-center justify-center gap-2 transition-colors shadow-md"
+              >
+                <Download className="w-4 h-4 text-[#C5A059]" />
+                <span>Download & Install App</span>
+              </button>
+
+              <button
+                onClick={handleCloseWelcome}
+                className="w-full py-2.5 text-xs text-[#7A7A7A] hover:text-[#0F0F0F] font-medium transition-colors"
+              >
+                Continue in Web Browser ➔
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* iOS Instructions Modal */}
       {showIosGuide && (

@@ -16,7 +16,8 @@ export default function OrderConfirmationPage() {
   useEffect(() => {
     async function fetchOrder() {
       try {
-        const res = await fetch(`/api/orders/${orderNumber}`);
+        const search = typeof window !== "undefined" ? window.location.search : "";
+        const res = await fetch(`/api/orders/${orderNumber}${search}`);
         const data = await res.json();
         if (res.ok) {
           setOrder(data.order);

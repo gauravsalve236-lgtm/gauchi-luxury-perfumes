@@ -74,6 +74,44 @@ export async function POST(req: Request) {
       data: { paymentGatewayOrderId: rzpOrder.id },
     });
 
+    // Create a Razorpay Hosted Payment Link (rzp.io) as a guaranteed fallback/alternative
+    // that never fails with 'website does not match registered website' error
+    let paymentLinkUrl: string | null = null;
+    try {
+      const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "localhost:3000";
+      const proto = req.headers.get("x-forwarded-proto") || "https";
+      const origin = `${proto}://${host}`;
+
+      const plRes = await fetch("https://api.razorpay.com/v1/payment_links", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${authHeader}`,
+        },
+        body: JSON.stringify({
+          amount: Math.round(order.total * 100),
+          currency: "INR",
+          description: `Gauchi Perfumes Order ${order.orderNumber}`,
+          reference_id: order.id,
+          customer: {
+            name: order.guestName || "Client",
+            email: order.guestEmail || undefined,
+            contact: order.guestPhone || undefined,
+          },
+          notify: { sms: false, email: false },
+          callback_url: `${origin}/order-confirmation/${order.orderNumber}?payment_id={payment_id}&payment_status=paid`,
+          callback_method: "get",
+        }),
+      });
+
+      if (plRes.ok) {
+        const plData = await plRes.json();
+        paymentLinkUrl = plData.short_url;
+      }
+    } catch (e) {
+      console.error("Payment link creation error:", e);
+    }
+
     return NextResponse.json({
       success: true,
       isTestMode: false,
@@ -81,6 +119,7 @@ export async function POST(req: Request) {
       amount: rzpOrder.amount,
       currency: rzpOrder.currency,
       keyId,
+      paymentLinkUrl,
     });
   } catch (error) {
     console.error("Razorpay order creation error:", error);

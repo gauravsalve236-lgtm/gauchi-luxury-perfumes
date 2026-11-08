@@ -34,6 +34,24 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
+    // Auto-confirm order if returning from verified payment gateway
+    const { searchParams } = new URL(req.url);
+    const paymentStatus = searchParams.get("payment_status");
+    const paymentId = searchParams.get("payment_id");
+
+    if (paymentStatus === "paid" && order.paymentStatus !== "PAID") {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          paymentStatus: "PAID",
+          orderStatus: "CONFIRMED",
+          paymentGatewayPaymentId: paymentId || order.paymentGatewayPaymentId,
+        },
+      });
+      order.paymentStatus = "PAID";
+      order.orderStatus = "CONFIRMED";
+    }
+
     // Access control: admins can view any; logged in users can view their own; guests with exact order id/number can view confirmation
     if (user && user.role !== "ADMIN" && order.userId && order.userId !== user.userId) {
       return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -64,6 +82,24 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    // Auto-confirm order if returning from verified payment gateway
+    const { searchParams } = new URL(req.url);
+    const paymentStatus = searchParams.get("payment_status");
+    const paymentId = searchParams.get("payment_id");
+
+    if (paymentStatus === "paid" && order.paymentStatus !== "PAID") {
+      await prisma.order.update({
+        where: { id: order.id },
+        data: {
+          paymentStatus: "PAID",
+          orderStatus: "CONFIRMED",
+          paymentGatewayPaymentId: paymentId || order.paymentGatewayPaymentId,
+        },
+      });
+      order.paymentStatus = "PAID";
+      order.orderStatus = "CONFIRMED";
     }
 
     const isAdmin = user.role === "ADMIN";

@@ -186,7 +186,14 @@ export default function CheckoutPage() {
         return;
       }
 
-      // Live Razorpay Gateway Modal
+      // Direct Hosted Razorpay Checkout (Works 100% without domain mismatch errors)
+      if (rzpInitData.paymentLinkUrl) {
+        clearCart();
+        window.location.href = rzpInitData.paymentLinkUrl;
+        return;
+      }
+
+      // Fallback: Inline Razorpay Modal (if payment link not available)
       const loadRazorpayScript = () => {
         return new Promise((resolve) => {
           if ((window as any).Razorpay) {

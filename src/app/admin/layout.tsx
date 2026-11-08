@@ -18,6 +18,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import AdminOrderNotifier from "@/components/AdminOrderNotifier";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -128,6 +129,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Main Content Area */}
       <main className="flex-1 p-6 md:p-10 max-w-7xl overflow-y-auto">
+        <AdminOrderNotifier />
         {children}
       </main>
     </div>
