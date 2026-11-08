@@ -13,11 +13,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    const keyId = process.env.RAZORPAY_KEY_ID;
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    // Fetch credentials from DB StoreSettings, fallback to environment variables
+    const dbKeyId = await prisma.storeSetting.findUnique({ where: { key: "razorpay_key_id" } });
+    const dbKeySecret = await prisma.storeSetting.findUnique({ where: { key: "razorpay_key_secret" } });
+
+    const keyId = dbKeyId?.value?.trim() || process.env.RAZORPAY_KEY_ID;
+    const keySecret = dbKeySecret?.value?.trim() || process.env.RAZORPAY_KEY_SECRET;
 
     // Check if live/test credentials are configured
-    const isMockMode = !keyId || keyId.includes("placeholder");
+    const isMockMode = !keyId || keyId.includes("placeholder") || !keySecret;
 
     if (isMockMode) {
       // In development / demo test mode without live gateway keys:

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Settings, Save, CheckCircle2, ShieldCheck } from "lucide-react";
+import { Settings, Save, CheckCircle2, ShieldCheck, Eye, EyeOff, CreditCard, ExternalLink, Lock } from "lucide-react";
 
 export default function AdminSettingsPage() {
   const [settings, setSettings] = useState<Record<string, string>>({
@@ -9,6 +9,8 @@ export default function AdminSettingsPage() {
     flat_shipping_rate: "99",
     cod_enabled: "true",
     razorpay_enabled: "true",
+    razorpay_key_id: "",
+    razorpay_key_secret: "",
     brand_tagline: "More than a fragrance. A lasting connection.",
     support_phone: "+91 98765 43210",
     support_email: "concierge@gauchi.com",
@@ -18,6 +20,7 @@ export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [showSecret, setShowSecret] = useState(false);
   const [status, setStatus] = useState("");
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,11 +162,26 @@ export default function AdminSettingsPage() {
           </div>
         </div>
 
-        {/* Payment Gateways */}
-        <div className="p-5 bg-white border border-[#EBE7DF] rounded-sm space-y-4">
-          <h3 className="font-semibold text-sm text-[#0F0F0F] border-b border-[#F0ECE4] pb-2">
-            Payment Methods
-          </h3>
+        {/* Payment Gateways & Razorpay API */}
+        <div className="p-5 bg-white border border-[#EBE7DF] rounded-sm space-y-5">
+          <div className="flex items-center justify-between border-b border-[#F0ECE4] pb-2">
+            <div className="flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-[#C5A059]" />
+              <h3 className="font-semibold text-sm text-[#0F0F0F]">
+                Payment Methods & Gateway Configuration
+              </h3>
+            </div>
+            <a
+              href="https://dashboard.razorpay.com/app/website-app-settings/api-keys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[11px] text-[#C5A059] hover:underline flex items-center gap-1 font-medium"
+            >
+              <span>Razorpay API Keys Dashboard</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+
           <div className="space-y-3">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -182,8 +200,85 @@ export default function AdminSettingsPage() {
                 onChange={(e) => handleChange("razorpay_enabled", e.target.checked ? "true" : "false")}
                 className="text-[#C5A059]"
               />
-              <span className="font-medium text-[#0F0F0F]">Enable Razorpay UPI / Cards / NetBanking</span>
+              <span className="font-medium text-[#0F0F0F]">Enable Razorpay Online Checkout (UPI / Cards / NetBanking)</span>
             </label>
+          </div>
+
+          {/* Razorpay API Credentials Box */}
+          <div className="p-4 bg-[#FAF8F5] border border-[#E0DBD0] rounded-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Lock className="w-3.5 h-3.5 text-[#C5A059]" />
+                <span className="text-xs font-semibold uppercase tracking-luxury text-[#0F0F0F]">
+                  Razorpay API Credentials
+                </span>
+              </div>
+
+              {/* Mode Indicator Badge */}
+              {settings.razorpay_key_id?.startsWith("rzp_live_") ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5EC] text-[#2A6E3B] border border-[#BDE3C4]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#2A6E3B] animate-pulse" />
+                  LIVE PRODUCTION MODE (Real Payments)
+                </span>
+              ) : settings.razorpay_key_id?.startsWith("rzp_test_") ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#FFF8E7] text-[#B87A00] border border-[#F2DEAA]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B87A00]" />
+                  TEST / SANDBOX MODE
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[#EBE7DF] text-[#5A5A5A]">
+                  SIMULATION MODE (Demo orders active)
+                </span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[#0F0F0F] font-medium mb-1">
+                  Razorpay Key ID
+                </label>
+                <input
+                  type="text"
+                  placeholder="rzp_test_... or rzp_live_..."
+                  value={settings.razorpay_key_id || ""}
+                  onChange={(e) => handleChange("razorpay_key_id", e.target.value.trim())}
+                  className="w-full px-3 py-2 bg-white border border-[#DDD] rounded-sm focus:border-[#C5A059] focus:outline-none font-mono text-xs"
+                />
+                <span className="text-[10px] text-[#7A7A7A] mt-1 block">
+                  Find this under <em>Razorpay Dashboard ➔ Account & Settings ➔ API Keys</em>.
+                </span>
+              </div>
+
+              <div>
+                <label className="block text-[#0F0F0F] font-medium mb-1">
+                  Razorpay Key Secret
+                </label>
+                <div className="relative">
+                  <input
+                    type={showSecret ? "text" : "password"}
+                    placeholder="Enter Key Secret"
+                    value={settings.razorpay_key_secret || ""}
+                    onChange={(e) => handleChange("razorpay_key_secret", e.target.value.trim())}
+                    className="w-full pl-3 pr-10 py-2 bg-white border border-[#DDD] rounded-sm focus:border-[#C5A059] focus:outline-none font-mono text-xs"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSecret(!showSecret)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#7A7A7A] hover:text-[#0F0F0F] p-1"
+                    aria-label={showSecret ? "Hide secret" : "Show secret"}
+                  >
+                    {showSecret ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+                <span className="text-[10px] text-[#7A7A7A] mt-1 block">
+                  Secret used for cryptographic HMAC SHA-256 signature verification.
+                </span>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-[#8C827A] pt-1">
+              💡 <strong>Instant Activation:</strong> Once entered and saved, customers will immediately be able to pay via Google Pay, PhonePe, UPI apps, Credit Cards, and Net Banking at checkout.
+            </p>
           </div>
         </div>
 

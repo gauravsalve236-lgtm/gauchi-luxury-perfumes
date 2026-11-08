@@ -23,7 +23,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
-    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    // Fetch secret from DB StoreSettings, fallback to environment variable
+    const dbKeySecret = await prisma.storeSetting.findUnique({ where: { key: "razorpay_key_secret" } });
+    const keySecret = dbKeySecret?.value?.trim() || process.env.RAZORPAY_KEY_SECRET;
     const isMockMode = !keySecret || keySecret.includes("placeholder");
 
     let isVerified = false;
