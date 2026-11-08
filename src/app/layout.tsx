@@ -16,8 +16,15 @@ export const metadata: Metadata = {
     title: "GAUCHI",
   },
   icons: {
-    icon: "/favicon.ico",
-    apple: "/favicon.ico",
+    icon: [
+      { url: "/images/gauchi-gold-logo.png", type: "image/png" },
+      { url: "/favicon.png", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      { url: "/images/gauchi-gold-logo.png", sizes: "192x192", type: "image/png" },
+    ],
+    shortcut: "/images/gauchi-gold-logo.png",
   },
   openGraph: {
     title: "GAUCHI — Luxury Perfumes",

@@ -139,11 +139,6 @@ export default function Footer() {
                   About Gauchi
                 </Link>
               </li>
-              <li>
-                <Link href="/admin/login" className="text-[#8C827A] hover:text-[#0F0F0F] transition-colors text-[11px]">
-                  Admin Portal ↗
-                </Link>
-              </li>
             </ul>
           </div>
 

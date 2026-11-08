@@ -247,16 +247,16 @@ export default function Header() {
               )}
             </Link>
 
-            {/* Customer Account / Admin Link */}
+            {/* Customer Account Link */}
             <div className="relative group">
               <Link
-                href={mounted && user ? (user.role === "ADMIN" ? "/admin" : "/account") : "/login"}
+                href={mounted && user ? "/account" : "/login"}
                 className="p-2 text-[#1A1A1A] hover:text-[#C5A059] transition-colors flex items-center gap-1.5"
                 aria-label="Account"
               >
                 <User className="w-5 h-5" />
                 {mounted && user && (
-                  <span className="text-[11px] font-medium text-[#1A1A1A] hidden md:inline max-w-[80px] truncate">
+                  <span className="text-xs font-medium text-[#1A1A1A] hidden md:inline max-w-[90px] truncate">
                     {user.name.split(" ")[0]}
                   </span>
                 )}
@@ -313,13 +313,13 @@ export default function Header() {
             {mounted && user ? (
               <>
                 <Link
-                  href={user.role === "ADMIN" ? "/admin" : "/account"}
+                  href="/account"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="font-medium text-[#C5A059]"
+                  className="font-medium text-[#0F0F0F] hover:text-[#C5A059]"
                 >
-                  {user.role === "ADMIN" ? "Admin Portal" : "My Account"} ({user.name})
+                  My Account ({user.name.split(" ")[0]})
                 </Link>
-                <button onClick={logout} className="text-[#8C827A] underline">
+                <button onClick={logout} className="text-[#8C827A] underline hover:text-[#0F0F0F]">
                   Log Out
                 </button>
               </>

@@ -101,25 +101,25 @@ export default function ProductCard({ product }: { product: ProductType }) {
       {/* Product Details */}
       <div className="p-4 flex flex-col flex-1 justify-between bg-white">
         <div>
-          <div className="flex items-center justify-between text-[11px] text-[#8C827A] uppercase tracking-wider mb-1">
+          <div className="flex items-center justify-between text-xs text-[#8C827A] uppercase tracking-wider mb-1">
             <span>{product.fragranceFamily}</span>
             <span>{product.gender}</span>
           </div>
 
           <Link href={`/shop/${product.slug}`} className="block group-hover:text-[#C5A059] transition-colors">
-            <h3 className="font-serif-luxury text-base font-medium text-[#0F0F0F] line-clamp-1">
+            <h3 className="font-serif-luxury text-base sm:text-lg font-medium text-[#0F0F0F] line-clamp-1">
               {product.name}
             </h3>
           </Link>
 
           {product.subtitle && (
-            <p className="text-[11px] text-[#7A7A7A] mt-0.5 line-clamp-1 font-light italic">
+            <p className="text-xs text-[#7A7A7A] mt-0.5 line-clamp-1 font-light italic">
               {product.subtitle}
             </p>
           )}
 
           {/* Key Fragrance Notes Teaser */}
-          <p className="text-[11px] text-[#5A5A5A] mt-2 line-clamp-1">
+          <p className="text-xs text-[#4A4A4A] mt-1.5 line-clamp-1">
             <span className="font-medium text-[#0F0F0F]">Notes:</span> {product.topNotes.split(",")[0]}, {product.middleNotes.split(",")[0]}, {product.baseNotes.split(",")[0]}
           </p>
         </div>
@@ -133,11 +133,11 @@ export default function ProductCard({ product }: { product: ProductType }) {
           </div>
 
           <div className="text-right">
-            <div className="text-sm font-semibold text-[#0F0F0F]">
+            <div className="text-base font-bold text-[#0F0F0F]">
               ₹{defaultVariant?.price}
             </div>
             {defaultVariant && defaultVariant.mrp > defaultVariant.price && (
-              <div className="text-[11px] text-[#8C827A] line-through">
+              <div className="text-xs text-[#8C827A] line-through">
                 ₹{defaultVariant.mrp}
               </div>
             )}

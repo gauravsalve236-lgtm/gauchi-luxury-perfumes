@@ -27,9 +27,9 @@ export default function BrandLogo({
   };
 
   const subtitleStyles = {
-    sm: "text-[7px] tracking-[0.3em]",
-    md: "text-[9px] tracking-[0.35em]",
-    lg: "text-[10px] tracking-[0.4em]",
+    sm: "text-[8px] tracking-[0.3em]",
+    md: "text-[10px] tracking-[0.35em]",
+    lg: "text-xs tracking-[0.4em]",
   };
 
   return (
