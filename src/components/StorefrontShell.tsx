@@ -3,6 +3,7 @@
 import React, { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import InstallAppBanner from "@/components/InstallAppBanner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
@@ -27,6 +28,7 @@ export default function StorefrontShell({
 
   return (
     <>
+      <InstallAppBanner />
       <Suspense fallback={<div className="h-8 bg-[#FAF8F5]" />}>
         <AnnouncementBar />
       </Suspense>

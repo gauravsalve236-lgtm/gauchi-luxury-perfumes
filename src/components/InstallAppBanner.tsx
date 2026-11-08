@@ -1,0 +1,146 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { Download, X, Smartphone, Share } from "lucide-react";
+
+export default function InstallAppBanner() {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isIos, setIsIos] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
+  const [showIosGuide, setShowIosGuide] = useState(false);
+
+  useEffect(() => {
+    // Check if already running in standalone mode (already installed as app)
+    const isRunningStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true;
+
+    if (isRunningStandalone) {
+      setIsStandalone(true);
+      return;
+    }
+
+    // Check if user previously dismissed banner in this session
+    const dismissed = sessionStorage.getItem("gauchi_app_banner_dismissed");
+    if (dismissed) return;
+
+    // Detect iOS devices
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
+    setIsIos(isIosDevice);
+
+    if (isIosDevice) {
+      // On iOS Safari, show the install pill
+      setShowBanner(true);
+    }
+
+    // Android / Desktop Chrome PWA beforeinstallprompt event
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowBanner(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (isIos) {
+      setShowIosGuide(true);
+      return;
+    }
+
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") {
+      setShowBanner(false);
+    }
+    setDeferredPrompt(null);
+  };
+
+  const handleDismiss = () => {
+    setShowBanner(false);
+    sessionStorage.setItem("gauchi_app_banner_dismissed", "true");
+  };
+
+  if (isStandalone || !showBanner) return null;
+
+  return (
+    <>
+      {/* Sleek Luxury App Download Bar */}
+      <div className="bg-[#0F0F0F] text-white border-b border-[#C5A059]/40 py-2.5 px-4 sticky top-0 z-50 animate-in slide-in-from-top duration-300">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <img
+              src="/images/gauchi-gold-logo.png"
+              alt="Gauchi App"
+              className="w-6 h-6 object-contain shrink-0"
+            />
+            <div className="truncate">
+              <span className="font-semibold text-white">Get the GAUCHI App</span>
+              <span className="text-[#C5A059] ml-1.5 hidden sm:inline">• Fast 1-tap ordering & order tracking</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={handleInstallClick}
+              className="px-3.5 py-1.5 bg-[#C5A059] hover:bg-[#D4B06A] text-[#0F0F0F] font-semibold text-[11px] uppercase tracking-luxury rounded-sm flex items-center gap-1.5 transition-colors shadow-xs"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Install App</span>
+            </button>
+            <button
+              onClick={handleDismiss}
+              className="p-1 text-[#8C827A] hover:text-white transition-colors"
+              aria-label="Dismiss banner"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* iOS Instructions Modal */}
+      {showIosGuide && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="bg-white rounded-t-xl sm:rounded-lg max-w-sm w-full p-6 text-center space-y-4 shadow-2xl animate-in slide-in-from-bottom duration-200">
+            <div className="w-12 h-12 rounded-full bg-[#FAF8F5] border border-[#C5A059] flex items-center justify-center mx-auto">
+              <Smartphone className="w-6 h-6 text-[#C5A059]" />
+            </div>
+
+            <div className="space-y-1">
+              <h3 className="font-serif-luxury text-lg text-[#0F0F0F]">Install Gauchi on iPhone</h3>
+              <p className="text-xs text-[#7A7A7A]">Follow these 2 quick steps to add the app to your home screen:</p>
+            </div>
+
+            <div className="space-y-2.5 text-left text-xs bg-[#FAF8F5] p-3.5 rounded-sm border border-[#EBE7DF]">
+              <div className="flex items-center gap-3">
+                <span className="w-5 h-5 rounded-full bg-[#0F0F0F] text-white flex items-center justify-center text-[10px] font-bold">1</span>
+                <span>Tap the <strong>Share</strong> button at the bottom of Safari (<Share className="w-3.5 h-3.5 inline text-[#C5A059]" />).</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="w-5 h-5 rounded-full bg-[#0F0F0F] text-white flex items-center justify-center text-[10px] font-bold">2</span>
+                <span>Scroll down and tap <strong>"Add to Home Screen"</strong>.</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowIosGuide(false)}
+              className="w-full py-2.5 bg-[#0F0F0F] text-white text-xs uppercase tracking-luxury font-medium hover:bg-[#C5A059] transition-colors rounded-sm"
+            >
+              Got It
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
