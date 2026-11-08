@@ -161,25 +161,25 @@ export default function HomePage() {
             {
               title: "Oud Collection",
               desc: "Mystical, hypnotic woody resins & smoky amber",
-              img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80",
+              img: "/images/products/black-oud-1.jpg",
               href: "/collections/oud-collection",
             },
             {
               title: "Floral & Fruity",
               desc: "Velvet Grasse rose petals & wild golden honey",
-              img: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=600&q=80",
+              img: "/images/products/wild-nectar.jpg",
               href: "/collections/floral-fruity",
             },
             {
               title: "Fresh & Aquatic",
               desc: "Marine sea salt, crisp apple & Haitian vetiver",
-              img: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80",
+              img: "/images/products/titan-blue.jpg",
               href: "/collections/fresh-aquatic",
             },
             {
               title: "Warm & Woody",
               desc: "Cuban dark rum, tonka bean & blonde tobacco",
-              img: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80",
+              img: "/images/products/lamour-nuit.jpg",
               href: "/collections/warm-woody",
             },
           ].map((col) => (

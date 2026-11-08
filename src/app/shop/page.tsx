@@ -233,6 +233,122 @@ function ShopContent() {
           )}
         </div>
       </div>
+
+      {/* Mobile Filter Drawer / Bottom Sheet */}
+      {mobileFilterOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex flex-col justify-end">
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileFilterOpen(false)}
+          />
+          <div className="relative bg-white w-full max-h-[85vh] overflow-y-auto rounded-t-xl shadow-2xl p-6 space-y-6 z-10 border-t border-[#EBE7DF]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EBE7DF]">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="w-4 h-4 text-[#C5A059]" />
+                <h3 className="font-serif-luxury text-lg text-[#0F0F0F]">Filter Fragrances</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setMobileFilterOpen(false)}
+                className="p-1.5 rounded-full hover:bg-[#FAF8F5] text-[#5A5A5A]"
+                aria-label="Close filters"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Fragrance Families */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-semibold uppercase tracking-luxury text-[#0F0F0F]">
+                Fragrance Family
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
+                {fragranceFamilies.map((family) => (
+                  <button
+                    key={family}
+                    type="button"
+                    onClick={() => setSelectedFamily(family)}
+                    className={`text-xs py-2 px-3 rounded-sm border text-center transition-colors ${
+                      selectedFamily === family
+                        ? "bg-[#0F0F0F] text-white border-[#0F0F0F] font-medium"
+                        : "bg-[#FAF8F5] text-[#5A5A5A] border-[#E0DBD0]"
+                    }`}
+                  >
+                    {family === "ALL" ? "All Families" : family}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Genders */}
+            <div className="space-y-2 pt-3 border-t border-[#F0ECE4]">
+              <h4 className="text-xs font-semibold uppercase tracking-luxury text-[#0F0F0F]">
+                Category / Gender
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
+                {genders.map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => setSelectedGender(g)}
+                    className={`text-xs py-2 px-3 rounded-sm border text-center transition-colors ${
+                      selectedGender === g
+                        ? "bg-[#0F0F0F] text-white border-[#0F0F0F] font-medium"
+                        : "bg-[#FAF8F5] text-[#5A5A5A] border-[#E0DBD0]"
+                    }`}
+                  >
+                    {g === "ALL" ? "All Genders" : g}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Price Ranges */}
+            <div className="space-y-2 pt-3 border-t border-[#F0ECE4]">
+              <h4 className="text-xs font-semibold uppercase tracking-luxury text-[#0F0F0F]">
+                Price Range
+              </h4>
+              <div className="grid grid-cols-2 gap-2">
+                {priceRanges.map((pr) => (
+                  <button
+                    key={pr.value}
+                    type="button"
+                    onClick={() => setSelectedPriceRange(pr.value)}
+                    className={`text-xs py-2 px-3 rounded-sm border text-center transition-colors ${
+                      selectedPriceRange === pr.value
+                        ? "bg-[#0F0F0F] text-white border-[#0F0F0F] font-medium"
+                        : "bg-[#FAF8F5] text-[#5A5A5A] border-[#E0DBD0]"
+                    }`}
+                  >
+                    {pr.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="pt-4 border-t border-[#EBE7DF] flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  resetFilters();
+                  setMobileFilterOpen(false);
+                }}
+                className="flex-1 py-3 border border-[#E0DBD0] text-xs font-medium uppercase tracking-luxury text-[#5A5A5A] hover:bg-[#FAF8F5]"
+              >
+                Reset
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileFilterOpen(false)}
+                className="flex-1 py-3 bg-[#0F0F0F] text-white text-xs font-medium uppercase tracking-luxury hover:bg-[#C5A059]"
+              >
+                Apply ({products.length})
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

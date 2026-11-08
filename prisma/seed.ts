@@ -142,13 +142,13 @@ async function main() {
       images: {
         create: [
           {
-            url: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=1000&q=85",
+            url: "/images/products/black-oud-1.jpg",
             alt: "Black Oud Royale bottle front view",
             isPrimary: true,
             displayOrder: 1,
           },
           {
-            url: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1000&q=85",
+            url: "/images/products/black-oud-2.jpg",
             alt: "Black Oud Royale box packaging",
             isPrimary: false,
             displayOrder: 2,
@@ -201,16 +201,10 @@ async function main() {
       images: {
         create: [
           {
-            url: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=1000&q=85",
+            url: "/images/products/wild-nectar.jpg",
             alt: "Wild Nectar Extrait luxury bottle",
             isPrimary: true,
             displayOrder: 1,
-          },
-          {
-            url: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1000&q=85",
-            alt: "Wild Nectar bottle angle",
-            isPrimary: false,
-            displayOrder: 2,
           },
         ],
       },
@@ -260,7 +254,7 @@ async function main() {
       images: {
         create: [
           {
-            url: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=1000&q=85",
+            url: "/images/products/titan-blue.jpg",
             alt: "Titan Blue Eau de Parfum",
             isPrimary: true,
             displayOrder: 1,
@@ -313,7 +307,7 @@ async function main() {
       images: {
         create: [
           {
-            url: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=1000&q=85",
+            url: "/images/products/roselle-velvet.jpg",
             alt: "Roselle Velvet bottle",
             isPrimary: true,
             displayOrder: 1,
@@ -366,7 +360,7 @@ async function main() {
       images: {
         create: [
           {
-            url: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=1000&q=85",
+            url: "/images/products/lamour-nuit.jpg",
             alt: "L'Amour Nuit bottle",
             isPrimary: true,
             displayOrder: 1,
@@ -419,7 +413,7 @@ async function main() {
       images: {
         create: [
           {
-            url: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=1000&q=85",
+            url: "/images/products/discovery-set.jpg",
             alt: "Gauchi Masterpiece Coffret Set",
             isPrimary: true,
             displayOrder: 1,

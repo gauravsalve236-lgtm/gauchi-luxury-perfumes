@@ -24,7 +24,11 @@ export async function GET(req: Request) {
     }
 
     if (category) {
-      where.category = { slug: category };
+      const simplified = category.replace("-collection", "").replace("-edp", "").replace("-", " ").trim();
+      where.OR = [
+        { category: { slug: category } },
+        { fragranceFamily: { contains: simplified } },
+      ];
     }
 
     if (fragranceFamily) {

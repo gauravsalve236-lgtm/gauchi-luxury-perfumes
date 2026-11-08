@@ -73,12 +73,16 @@ export default function ProductCard({ product }: { product: ProductType }) {
           />
         </button>
 
-        {/* Product Image with smooth transition */}
-        <Link href={`/shop/${product.slug}`} className="flex items-center justify-center w-full h-full p-2">
+        {/* Product Image with smooth transition - absolute inset-0 to prevent mobile aspect ratio collapse */}
+        <Link
+          href={`/shop/${product.slug}`}
+          className="absolute inset-0 flex items-center justify-center p-3 z-0"
+        >
           <img
-            src={primaryImage?.url || "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=800&q=80"}
+            src={primaryImage?.url || "/uploads/main_1794031426600.jpg"}
             alt={product.name}
-            className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105"
+            loading="lazy"
+            className="w-full h-full object-contain transition-transform duration-700 group-hover:scale-105 select-none"
           />
         </Link>
 

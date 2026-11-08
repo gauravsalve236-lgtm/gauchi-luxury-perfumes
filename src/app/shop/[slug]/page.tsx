@@ -244,12 +244,12 @@ export default function ProductDetailPage() {
             )}
 
             {/* Main Stage Image - Ultra Clean Luxury Showcase */}
-            <div className="flex-1 w-full aspect-square bg-white rounded-sm border border-[#EBE7DF] overflow-hidden relative group flex items-center justify-center shadow-xs">
+            <div className="flex-1 w-full aspect-square bg-white rounded-sm border border-[#EBE7DF] overflow-hidden relative group shadow-xs">
               <img
                 src={primaryImage?.url || ""}
                 alt={product.name}
                 onClick={() => setLightboxOpen(true)}
-                className="w-full h-full object-contain cursor-zoom-in transition-transform duration-500 group-hover:scale-[1.03] select-none"
+                className="absolute inset-0 w-full h-full object-contain p-4 cursor-zoom-in transition-transform duration-500 group-hover:scale-[1.03] select-none"
               />
 
               {/* Prev / Next Arrows (on hover or touch) */}
@@ -371,13 +371,14 @@ export default function ProductDetailPage() {
                 {product.variants.map((v) => (
                   <button
                     key={v.id}
+                    type="button"
                     onClick={() => {
                       setSelectedVariant(v);
                       setQuantity(1);
                     }}
-                    className={`p-3 text-left border rounded-sm transition-all ${
+                    className={`p-3 text-left border rounded-sm transition-all cursor-pointer touch-manipulation select-none active:scale-[0.98] ${
                       selectedVariant.id === v.id
-                        ? "border-[#0F0F0F] bg-white ring-1 ring-[#0F0F0F]"
+                        ? "border-[#0F0F0F] bg-white ring-2 ring-[#0F0F0F] shadow-xs"
                         : "border-[#E0DBD0] bg-[#FAF8F5] hover:bg-white text-[#5A5A5A]"
                     }`}
                   >
