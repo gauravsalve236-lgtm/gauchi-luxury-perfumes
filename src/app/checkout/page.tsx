@@ -145,26 +145,107 @@ export default function CheckoutPage() {
         return;
       }
 
-      // In test mode / fallback, perform secure server verification
-      const verifyRes = await fetch("/api/payments/razorpay/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: order.id,
-          razorpayOrderId: rzpInitData.gatewayOrderId,
-          razorpayPaymentId: `pay_test_${Date.now()}`,
-          razorpaySignature: "simulated_secure_signature",
-        }),
-      });
+      // If mock/test mode without API keys:
+      if (rzpInitData.isTestMode) {
+        const verifyRes = await fetch("/api/payments/razorpay/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: order.id,
+            razorpayOrderId: rzpInitData.gatewayOrderId,
+            razorpayPaymentId: `pay_test_${Date.now()}`,
+            razorpaySignature: "simulated_secure_signature",
+          }),
+        });
 
-      const verifyData = await verifyRes.json();
-      if (verifyRes.ok && verifyData.success) {
-        clearCart();
-        router.push(`/order-confirmation/${order.orderNumber}`);
-      } else {
-        setErrorMessage(verifyData.error || "Payment verification failed");
-        setIsSubmitting(false);
+        const verifyData = await verifyRes.json();
+        if (verifyRes.ok && verifyData.success) {
+          clearCart();
+          router.push(`/order-confirmation/${order.orderNumber}`);
+        } else {
+          setErrorMessage(verifyData.error || "Payment verification failed");
+          setIsSubmitting(false);
+        }
+        return;
       }
+
+      // Live Razorpay Gateway Modal
+      const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+          if ((window as any).Razorpay) {
+            resolve(true);
+            return;
+          }
+          const script = document.createElement("script");
+          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+          script.onload = () => resolve(true);
+          script.onerror = () => resolve(false);
+          document.body.appendChild(script);
+        });
+      };
+
+      const loaded = await loadRazorpayScript();
+      if (!loaded) {
+        setErrorMessage("Failed to load Razorpay payment gateway. Please check connection.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const rzpOptions = {
+        key: rzpInitData.keyId,
+        amount: rzpInitData.amount,
+        currency: rzpInitData.currency || "INR",
+        name: "GAUCHI — Luxury Perfumes",
+        description: `Order ${order.orderNumber}`,
+        image: "/images/gauchi-gold-logo.png",
+        order_id: rzpInitData.gatewayOrderId,
+        prefill: {
+          name: fullName,
+          email: email,
+          contact: phone,
+        },
+        theme: {
+          color: "#0F0F0F",
+        },
+        handler: async function (response: any) {
+          try {
+            const verifyRes = await fetch("/api/payments/razorpay/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                orderId: order.id,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+            if (verifyRes.ok && verifyData.success) {
+              clearCart();
+              router.push(`/order-confirmation/${order.orderNumber}`);
+            } else {
+              setErrorMessage(verifyData.error || "Payment verification failed.");
+              setIsSubmitting(false);
+            }
+          } catch {
+            setErrorMessage("Error verifying payment with server.");
+            setIsSubmitting(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setIsSubmitting(false);
+          },
+        },
+      };
+
+      const razorpayInstance = new (window as any).Razorpay(rzpOptions);
+      razorpayInstance.on("payment.failed", function (response: any) {
+        setErrorMessage(response.error?.description || "Payment failed or cancelled.");
+        setIsSubmitting(false);
+      });
+      razorpayInstance.open();
     } catch (err) {
       console.error(err);
       setErrorMessage("A network error occurred while placing the order.");
