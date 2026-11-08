@@ -31,7 +31,24 @@ export default function CheckoutPage() {
   const [state, setState] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"RAZORPAY" | "COD">("RAZORPAY");
+  const [codEnabled, setCodEnabled] = useState(false);
   const [notes, setNotes] = useState("");
+
+  // Load store settings for payment gateways
+  React.useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.settings) {
+          const isCod = data.settings.cod_enabled === "true";
+          setCodEnabled(isCod);
+          if (!isCod) {
+            setPaymentMethod("RAZORPAY");
+          }
+        }
+      })
+      .catch((e) => console.error(e));
+  }, []);
 
   // Coupon state
   const [couponCode, setCouponCode] = useState("");
@@ -415,34 +432,36 @@ export default function CheckoutPage() {
                 </div>
               </label>
 
-              {/* Cash On Delivery Option */}
-              <label
-                className={`p-4 border rounded-sm flex items-start gap-3 cursor-pointer transition-colors ${
-                  paymentMethod === "COD"
-                    ? "border-[#0F0F0F] bg-white ring-1 ring-[#0F0F0F]"
-                    : "border-[#E0DBD0] bg-[#FAF8F5]"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="COD"
-                  checked={paymentMethod === "COD"}
-                  onChange={() => setPaymentMethod("COD")}
-                  className="mt-1 text-[#C5A059] focus:ring-[#C5A059]"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#0F0F0F]">
-                      Cash on Delivery (COD)
-                    </span>
-                    <Banknote className="w-4 h-4 text-[#C5A059]" />
+              {/* Cash On Delivery Option (Shown only if enabled in Store Settings) */}
+              {codEnabled && (
+                <label
+                  className={`p-4 border rounded-sm flex items-start gap-3 cursor-pointer transition-colors ${
+                    paymentMethod === "COD"
+                      ? "border-[#0F0F0F] bg-white ring-1 ring-[#0F0F0F]"
+                      : "border-[#E0DBD0] bg-[#FAF8F5]"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="COD"
+                    checked={paymentMethod === "COD"}
+                    onChange={() => setPaymentMethod("COD")}
+                    className="mt-1 text-[#C5A059] focus:ring-[#C5A059]"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-[#0F0F0F]">
+                        Cash on Delivery (COD)
+                      </span>
+                      <Banknote className="w-4 h-4 text-[#C5A059]" />
+                    </div>
+                    <p className="text-[11px] text-[#7A7A7A] mt-1">
+                      Pay in cash upon doorstep delivery by our courier executive.
+                    </p>
                   </div>
-                  <p className="text-[11px] text-[#7A7A7A] mt-1">
-                    Pay in cash upon doorstep delivery by our courier executive.
-                  </p>
-                </div>
-              </label>
+                </label>
+              )}
             </div>
           </div>
         </div>
